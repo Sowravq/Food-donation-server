@@ -25,6 +25,7 @@ async function run() {
     await client.connect();
 
     const foodCollection = client.db('foodDB').collection('foods');
+    const  requestCollection = client.db('requestDB').collection('requests');
 
 
     app.get('/foods', async(req , res)=>{
@@ -37,20 +38,28 @@ async function run() {
       res.send(results)
      })
 
-    app.get('/foods',async(req,res)=>{
-     const cursor = foodCollection.find();
-     const result = await cursor.toArray();
-     res.send(result)
-    })
 
-    app.get('/foods/:id',async(req,res)=>{
+     app.get('/foods/:id',async(req,res)=>{
       const id = req.params.id;
       const query = {_id: new ObjectId(id)};
       const result = await foodCollection.findOne(query);
       res.send(result)
     })
 
-     
+     app.get('/foods/:email',async(req,res)=>{
+      const email = req.params.email;
+       const query = {email:email};
+       const result = await foodCollection.findOne(query);
+       res.send(result)
+
+     })
+
+    app.get('/foods',async(req,res)=>{
+     const cursor = foodCollection.find();
+     const result = await cursor.toArray();
+     res.send(result)
+    })
+
     
 
 
@@ -60,7 +69,6 @@ async function run() {
         res.send(result)
     })
 
-
     app.delete('/foods/:id',async(req,res)=>{
       const id = req.params.id;
        
@@ -68,6 +76,57 @@ async function run() {
       const result = await foodCollection.deleteOne(query);
       res.send(result)
     })
+
+
+    app.get('/requests', async(req , res)=>{
+       
+      let query = {};
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      const results = await  requestCollection.find(query).toArray();
+      res.send(results)
+     })
+
+
+    app.post('/requests',async(req,res)=>{
+      const food = req.body;
+      const result = await requestCollection.insertOne(food);
+      res.send(result)
+    })
+
+
+    app.delete('/requests/:id',async(req,res)=>{
+      const id = req.params.id;
+       
+      const query = {_id: new ObjectId(id)};
+      const result = await requestCollection.deleteOne(query);
+      res.send(result)
+    })
+
+    
+
+
+    // app.put('/foods/:id',async(req,res)=>{
+    //   const id =  req.params.id;
+    //   const filter = {_id: new ObjectId(id)};
+    //   const option = {upsert:true};
+    //   const food= req.body;
+    //   const updateFood ={
+    //      name:food.name,
+    //      email:food.email,
+    //       donarImg:food.donarImg,
+    //        foodName:food.foodName,
+    //        photoUrl:food.photoUrl,
+    //        foodQuantity:food.foodQuantity,
+    //        location:food.location,
+    //        expiredDate:food.expiredDate,
+    //        foodStatus:food.foodStatus,
+    //        additionalNotes:food.additionalNotes
+    //   }
+    //   const result = await foodCollection.updateOne(filter,updateFood,option);
+    //   res.send(result)
+    // })
    
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
