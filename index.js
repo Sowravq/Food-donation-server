@@ -27,6 +27,16 @@ async function run() {
     const foodCollection = client.db('foodDB').collection('foods');
 
 
+    app.get('/foods', async(req , res)=>{
+       
+      let query = {};
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      const results = await foodCollection.find(query).toArray();
+      res.send(results)
+     })
+
     app.get('/foods',async(req,res)=>{
      const cursor = foodCollection.find();
      const result = await cursor.toArray();
@@ -40,9 +50,12 @@ async function run() {
       res.send(result)
     })
 
+     
+    
+
+
     app.post('/foods',async(req,res)=>{
         const food = req.body;
-        console.log(food);
         const result = await foodCollection.insertOne(food);
         res.send(result)
     })
