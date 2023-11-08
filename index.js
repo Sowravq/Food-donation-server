@@ -78,6 +78,14 @@ async function run() {
     })
 
 
+     
+    app.get('/requests/:foodId',async(req,res)=>{
+      const foodId = req.params.foodId;
+      const query = {foodId:foodId};
+      const resulted = await requestCollection.findOne(query);
+      res.send(resulted)
+    })
+
     app.get('/requests', async(req , res)=>{
        
       let query = {};
@@ -88,7 +96,7 @@ async function run() {
       res.send(results)
      })
 
-
+     
     app.post('/requests',async(req,res)=>{
       const food = req.body;
       const result = await requestCollection.insertOne(food);
