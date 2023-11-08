@@ -110,6 +110,8 @@ async function run() {
     })
 
 
+
+
     app.delete('/requests/:id',async(req,res)=>{
       const id = req.params.id;
        
@@ -118,17 +120,26 @@ async function run() {
       res.send(result)
     })
 
-    
+    app.patch('/requests/:foodId',async(req,res)=>{
+      const foodId= req.params.foodId;
+      const filter = {foodId:foodId}
+      const updateFood = req.body;
+      const updateDoc = {
+        $set: {
+          foodStatus: updateFood.foodStatus
+        },
+      };
+      const result = await requestCollection.updateOne(filter,updateDoc);
+              res.send(result)
+
+    })
     
 
     app.put('/foods/:id',async(req,res)=>{
       const  id =  req.params.id;
       const filter = {_id: new ObjectId(id)};
-      // const filter = {email:email};
-      console.log(filter);
       const option = {upsert:true};
       const information= req.body;
-      console.log(information);
       const food ={
         $set: {
          name:information.name,
@@ -148,6 +159,9 @@ async function run() {
       res.send(result)
      
     })
+
+
+     
    
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
