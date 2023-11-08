@@ -28,6 +28,11 @@ async function run() {
     const  requestCollection = client.db('requestDB').collection('requests');
 
 
+     
+
+
+     
+
     app.get('/foods', async(req , res)=>{
        
       let query = {};
@@ -37,7 +42,6 @@ async function run() {
       const results = await foodCollection.find(query).toArray();
       res.send(results)
      })
-
 
      app.get('/foods/:id',async(req,res)=>{
       const id = req.params.id;
@@ -53,6 +57,8 @@ async function run() {
        res.send(result)
 
      })
+
+     
 
     app.get('/foods',async(req,res)=>{
      const cursor = foodCollection.find();
@@ -113,28 +119,35 @@ async function run() {
     })
 
     
+    
 
-
-    // app.put('/foods/:id',async(req,res)=>{
-    //   const id =  req.params.id;
-    //   const filter = {_id: new ObjectId(id)};
-    //   const option = {upsert:true};
-    //   const food= req.body;
-    //   const updateFood ={
-    //      name:food.name,
-    //      email:food.email,
-    //       donarImg:food.donarImg,
-    //        foodName:food.foodName,
-    //        photoUrl:food.photoUrl,
-    //        foodQuantity:food.foodQuantity,
-    //        location:food.location,
-    //        expiredDate:food.expiredDate,
-    //        foodStatus:food.foodStatus,
-    //        additionalNotes:food.additionalNotes
-    //   }
-    //   const result = await foodCollection.updateOne(filter,updateFood,option);
-    //   res.send(result)
-    // })
+    app.put('/foods/:id',async(req,res)=>{
+      const  id =  req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      // const filter = {email:email};
+      console.log(filter);
+      const option = {upsert:true};
+      const information= req.body;
+      console.log(information);
+      const food ={
+        $set: {
+         name:information.name,
+         email:information.email,
+          donarImg:information.donarImg,
+           foodName:information.foodName,
+           photoUrl:information.photoUrl,
+           foodQuantity:information.foodQuantity,
+           location:information.location,
+           expiredDate:information.expiredDate,
+           foodStatus:information.foodStatus,
+           additionalNotes:information.additionalNotes
+      }
+       
+      }
+      const result = await foodCollection.updateOne(  filter,food,option )
+      res.send(result)
+     
+    })
    
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
